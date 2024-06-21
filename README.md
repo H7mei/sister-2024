@@ -32,6 +32,10 @@ Untuk membuat kontainer LXC yang diperlukan, jalankan skrip Ansible yang disedia
 
 ![instal.png](/assets/install_container.png)
 
+**Catatan Penting:**
+
+- Pastikan lxc container sudah kosong untuk menjalankan script
+
 ### Langkah 2: Pengaturan Framework
 
 Setelah kontainer berjalan, Anda perlu mengatur framework di setiap kontainer.
@@ -46,7 +50,6 @@ Setelah kontainer berjalan, Anda perlu mengatur framework di setiap kontainer.
 
 **Catatan Penting:**
 
-- Pastikan lxc container sudah kosong untuk menjalankan script
 - Jika ada masalah dalam pembuatan frameworks secara otomatis, pertimbangkan untuk melakukan instalasi secara manual satu per satu.
 
 ### Langkah 3: Konfigurasi Nginx
