@@ -6,7 +6,7 @@
 **Anggota:**
 
 - Muhammad Hanafi Choirulloh - NIM: 1203210141
-- Farel Ilyas Harianto - NIM: 1203210142
+- Farel Ilyas Harianto - NIM: 1203210151
 
 ## Panduan Pengaturan
 
@@ -160,4 +160,5 @@ server {
 - [Ujian SAS - Final Project Report](https://github.com/ignatiaindy/Ujian-SAS/blob/main/UAS/Final%20Project%20Report.md)
 - [Install Packages with Ansible](https://opensource.com/article/20/9/install-packages-ansible)
 - [LXC Containers on Ubuntu](https://ubuntu.com/server/docs/lxc-containers)
+
 # sister-2024
