@@ -1,0 +1,7 @@
+- hosts: Wordpress
+  vars:
+    username: "admin"
+    password: "1202199022"
+    domain: "lxc_php7.dev"
+  roles:
+    - wp

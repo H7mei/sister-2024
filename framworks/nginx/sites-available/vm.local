@@ -1,0 +1,74 @@
+upstream laravel {
+    least_conn;
+    server Lxc_php7_2.dev;
+    server Lxc_php7_3.dev;
+    server Lxc_php7_4.dev;
+    server Lxc_php7_6.dev;
+}
+
+upstream blog {
+    ip_hash;
+    server Lxc_php7_2.dev;
+    server Lxc_php7_3.dev;
+    server Lxc_php7_4.dev;
+    server Lxc_php7_5.dev;
+}
+
+upstream yii {
+    server Lxc_php7.dev weight=3;
+    server Lxc_php7_2.dev weight=2;
+    server Lxc_php7_4.dev weight=4;
+    server Lxc_php7_5.dev weight=1;
+    server Lxc_php7_6.dev weight=6;
+}
+
+upstream ci {
+    server Lxc_php5.dev;
+    server Lxc_php5_2.dev;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name kelompok06.fpsas;
+    root /var/www/html;
+    index index.html;
+
+    location /app {
+        rewrite /app/(.*)$ /$1 break;
+        proxy_pass http://ci;
+    }
+
+    #location /blog {
+    #    rewrite /blog/(.*)$ /$1 break;
+    #    proxy_pass http://Lxc_php7.dev;
+    #}
+
+    location /phpmyadmin {
+        rewrite /phpmyadmin/(.*)$ /$1 break;
+        proxy_pass http://lxc_mariadb.dev;
+    }
+
+    location /product {
+        rewrite /product/(.*)$ /$1 break;
+        proxy_pass http://yii;
+    }
+
+    location / {
+        #rewrite /landing/(.*)$ /$1 break;
+        proxy_pass http://laravel;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name news.kelompok06.fpsas;
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        rewrite /app/(.*)$ /$1 break;
+        proxy_pass http://blog;
+    }
+}

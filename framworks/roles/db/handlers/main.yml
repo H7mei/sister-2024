@@ -1,0 +1,5 @@
+- name: restart mysql
+  become: true
+  become_user: root
+  become_method: su
+  action: service name=mysql state=restarted

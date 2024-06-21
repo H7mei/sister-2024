@@ -1,0 +1,6 @@
+- hosts: ci
+  vars:
+    git_url: "https://github.com/aldonesia/sas-ci"
+    domain: "/var/www/html/ci"
+  roles:
+    - app

@@ -1,0 +1,8 @@
+10.0.3.140    lxc_mariadb.dev
+10.0.3.1      lxc_php5.dev
+10.0.3.2      lxc_php5_2.dev
+10.0.3.3      lxc_php7_2.dev
+10.0.3.4      lxc_php7_3.dev
+10.0.3.5      lxc_php7_4.dev
+10.0.3.6      lxc_php7_5.dev
+10.0.3.7      lxc_php7_6.dev

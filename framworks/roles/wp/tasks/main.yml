@@ -1,0 +1,27 @@
+- name: delete apt cache
+  become: true
+  become_user: root
+  become_method: su
+  command: rm -vf /var/lib/apt/lists/*
+
+- name: install php
+  become: true
+  become_user: root
+  become_method: su
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  with_items:
+    - nginx
+    - nginx-extras
+    - php7.4
+    - php7.4-fpm
+    - php7.4-curl
+    - php7.4-xml
+    - php7.4-gd
+    - php7.4-opcache
+    - php7.4-zip
+    - php7.4-mbstring
+    - php7.4-cli
+    - php7.4-mysql

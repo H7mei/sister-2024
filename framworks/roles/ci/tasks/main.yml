@@ -1,0 +1,72 @@
+- name: delete apt cache
+  become: true
+  command: rm -vf /var/lib/apt/lists/*
+
+- name: install requirement dpkg to install php5
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  loop:
+    - python-apt
+    - ca-certificates
+    - apt-transport-https
+    - wget
+    - curl
+    - software-properties-common
+    - git
+
+- name: Add key
+  apt_key:
+    url: "https://packages.sury.org/php/apt.gpg"
+    state: present
+
+- name: Add PHP Repository
+  apt_repository:
+    repo: "deb https://packages.sury.org/php/ stretch main"
+    state: present
+    filename: php.list
+    update_cache: true
+
+- name: install nginx php5
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  loop:
+    - nginx
+    - nginx-extras
+    - php5.6
+    - php5.6-fpm
+    - php5.6-common
+    - php5.6-curl
+    - php5.6-mbstring
+    - php5.6-xml
+
+- name: Git clone repo
+  become: true
+  git:
+    repo: "{{ git_url }}"
+    dest: "{{ destdir }}"
+
+- name: Copy app.conf
+  template:
+    src: templates/app.conf.j2
+    dest: /etc/nginx/sites-available/{{ domain }}
+
+- name: Delete another nginx config
+  become: true
+  command: rm -f /etc/nginx/sites-enabled/*
+
+- name: Symlink app.conf
+  command: ln -sfn /etc/nginx/sites-available/{{ domain }} /etc/nginx/sites-enabled/{{ domain }}
+  notify:
+    - restart nginx
+
+- name: Write {{ domain }} to /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "127.0.0.1 {{ domain }}"
+    state: present

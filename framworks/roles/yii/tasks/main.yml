@@ -1,0 +1,82 @@
+---
+- name: delete apt cache
+  become: true
+  become_user: root
+  become_method: su
+  command: rm -vf /var/lib/apt/lists/*
+
+- name: install php
+  become: true
+  become_user: root
+  become_method: su
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  with_items:
+    - nginx
+    - nginx-extras
+    - php7.4
+    - php7.4-fpm
+    - php7.4-curl
+    - php7.4-xml
+    - php7.4-gd
+    - php7.4-opcache
+    - php7.4-zip
+    - php7.4-mbstring
+    - php7.4-cli
+
+- name: Download and install Composer
+  shell: curl -sS https://getcomposer.org/installer | php
+  args:
+    chdir: /usr/src/
+  creates: /usr/local/bin/composer
+  warn: false
+  become: true
+
+- name: Add Composer to global path
+  copy:
+    dest: /usr/local/bin/composer
+    group: root
+    mode: "0755"
+    owner: root
+    src: /usr/src/composer.phar
+    remote_src: yes
+  become: true
+
+- name: Ansible delete file create-project
+  file:
+    path: /var/www/html/basic
+    state: absent
+
+- name: composer create-project
+  shell: /usr/local/bin/composer create-project yiisoft/yii2-app-basic /var/www/html/basic --prefer-dist --no-interaction
+
+- name: chmod
+  become: true
+  become_user: root
+  become_method: su
+  command: chmod +x /usr/local/bin/composer
+
+- name: Composer install
+  shell: cd /var/www/html/basic; /usr/local/bin/composer install --no-interaction
+  become: true
+
+- name: Copy yii.conf
+  template:
+    src: templates/yii.conf
+    dest: /etc/nginx/sites-available/{{ domain }}
+  vars:
+    servername: "{{ domain }}"
+
+- name: Symlink yii.conf
+  command: ln -sfn /etc/nginx/sites-available/{{ domain }} /etc/nginx/sites-enabled/{{ domain }}
+  notify:
+    - restart nginx
+
+- name: Write {{ domain }} to /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^.*{{ domain }}$"
+    line: "127.0.0.1 {{ domain }}"
+    state: present

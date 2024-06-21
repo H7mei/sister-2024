@@ -1,0 +1,31 @@
+- name: delete apt cache
+  become: true
+  become_user: root
+  become_method: su
+  command: rm -vf /var/lib/apt/lists/*
+
+- name: install mariadb
+  become: true
+  become_user: root
+  become_method: su
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  with_items:
+    - mariadb-server
+    - python-mysqldb
+    - python-pymysql
+
+- name: Stop MySQL
+  service:
+    name: mysql
+    state: stopped
+
+- name: set environment variables
+  shell: systemctl set-environment MYSQLD_OPTS="--skip-grant-tables"
+
+- name: Start MySQL
+  service:
+    name: mysql
+    state: started

@@ -1,0 +1,25 @@
+[laravel]
+ubuntu_php7.1 ansible_host=lxc_php7.2.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+ubuntu_php7.2 ansible_host=lxc_php7.3.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+ubuntu_php7.3 ansible_host=lxc_php7.4.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+ubuntu_php7.4 ansible_host=lxc_php7.5.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+
+[wordpress]
+ubuntu_php1.0 ansible_host=lxc_php7.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+ubuntu_php2.0 ansible_host=lxc_php7.2.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+ubuntu_php3.0 ansible_host=lxc_php7.4.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+ubuntu_php4.0 ansible_host=lxc_php7.6.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+
+[database]
+lxc_mariadb ansible_host=lxc_mariadb.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+
+[yii2]
+yii_1 ansible_host=lxc_php7.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+yii_2 ansible_host=lxc_php7.2.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+yii_3 ansible_host=lxc_php7.4.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+yii_4 ansible_host=lxc_php7.5.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+yii_5 ansible_host=lxc_php7.6.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+
+[ci]
+ci_1 ansible_host=lxc_php5.dev ansible_ssh_user=root ansible_become_pass=rootadmin
+ci_2 ansible_host=lxc_php5.2.dev ansible_ssh_user=root ansible_become_pass=rootadmin

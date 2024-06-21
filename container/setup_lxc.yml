@@ -1,0 +1,89 @@
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Ensure Python3 and LXC bindings are installed
+      apt:
+        name:
+          - python3-lxc
+          - lxc-utils
+          - lxc
+        state: latest
+
+    - name: Create Ubuntu LXC containers
+      command: lxc-create -t download -n {{ item }} -- -d ubuntu -r focal -a amd64
+      loop:
+        - LXC_PHP7_1
+        - LXC_PHP7_2
+        - LXC_PHP7_3
+        - LXC_PHP7_4
+        - LXC_PHP7_5
+        - LXC_PHP7_6
+
+    - name: Create Debian LXC containers for PHP 5.6
+      command: lxc-create -t download -n {{ item }} -- -d debian -r buster -a amd64
+      loop:
+        - LXC_PHP5_1
+        - LXC_PHP5_2
+
+    - name: Create Debian LXC container for Database
+      command: lxc-create -t download -n LXC_DB_SERVER -- -d debian -r buster -a amd64
+
+    - name: Start all LXC containers
+      command: lxc-start -n {{ item }}
+      loop:
+        - LXC_PHP7_1
+        - LXC_PHP7_2
+        - LXC_PHP7_3
+        - LXC_PHP7_4
+        - LXC_PHP7_5
+        - LXC_PHP7_6
+        - LXC_PHP5_1
+        - LXC_PHP5_2
+        - LXC_DB_SERVER
+
+    - name: Install and configure PHP 7.4 on Ubuntu containers
+      block:
+        - name: Install PHP 7.4 and necessary packages
+          command: lxc-attach -n {{ item }} -- apt-get update && apt-get install -y php7.4 php7.4-fpm php7.4-cli php7.4-json nginx openssh-server
+        - name: Set root password
+          command: lxc-attach -n {{ item }} -- sh -c "echo 'root:rootadmin' | chpasswd"
+        - name: Enable root SSH login
+          command: lxc-attach -n {{ item }} -- sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+        - name: Restart SSH service
+          command: lxc-attach -n {{ item }} -- systemctl restart ssh
+      loop:
+        - LXC_PHP7_1
+        - LXC_PHP7_2
+        - LXC_PHP7_3
+        - LXC_PHP7_4
+        - LXC_PHP7_5
+        - LXC_PHP7_6
+
+    - name: Install and configure MariaDB on LXC_DB_SERVER
+      block:
+        - name: Install MariaDB and OpenSSH server
+          command: lxc-attach -n LXC_DB_SERVER -- apt-get install -y mariadb-server openssh-server
+        - name: Start MariaDB and secure installation
+          command: lxc-attach -n LXC_DB_SERVER -- bash -c "service mariadb start && mysql_secure_installation"
+          environment:
+            MYSQL_PWD: rootadmin
+
+    - name: Setup PHP 5.6 repository and install PHP packages in Debian containers
+      block:
+        - name: Install necessary tools for adding repository
+          command: lxc-attach -n {{ item }} -- apt-get install -y software-properties-common apt-transport-https lsb-release ca-certificates
+        - name: Download PHP repository GPG key
+          command: lxc-attach -n {{ item }} -- wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+        - name: Add PHP repository
+          command: lxc-attach -n {{ item }} -- sh -c "echo 'deb https://packages.sury.org/php/ $(lsb_release -sc) main' > /etc/apt/sources.list.d/php.list"
+        - name: Update package list and install PHP 5.6 with necessary extensions
+          command: lxc-attach -n {{ item }} -- apt update && apt install -y php5.6 php5.6-fpm php5.6-cli php5.6-json php5.6-curl php5.6-mcrypt php5.6-gd openssh-server
+        - name: Set root password
+          command: lxc-attach -n {{ item }} -- sh -c "echo 'root:rootadmin' | chpasswd"
+        - name: Enable root SSH login
+          command: lxc-attach -n {{ item }} -- sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+        - name: Restart SSH service
+          command: lxc-attach -n {{ item }} -- systemctl restart ssh
+      loop:
+        - LXC_PHP5_1
+        - LXC_PHP5_2

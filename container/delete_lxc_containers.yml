@@ -1,0 +1,29 @@
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Stop all LXC containers
+      command: lxc-stop -n {{ item }}
+      loop:
+        - LXC_PHP7_1
+        - LXC_PHP7_2
+        - LXC_PHP7_3
+        - LXC_PHP7_4
+        - LXC_PHP7_5
+        - LXC_PHP7_6
+        - LXC_PHP5_1
+        - LXC_PHP5_2
+        - LXC_DB_SERVER
+      ignore_errors: yes
+
+    - name: Delete all LXC containers
+      command: lxc-destroy -n {{ item }}
+      loop:
+        - LXC_PHP7_1
+        - LXC_PHP7_2
+        - LXC_PHP7_3
+        - LXC_PHP7_4
+        - LXC_PHP7_5
+        - LXC_PHP7_6
+        - LXC_PHP5_1
+        - LXC_PHP5_2
+        - LXC_DB_SERVER

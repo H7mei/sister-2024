@@ -1,0 +1,7 @@
+- hosts: yii2
+  vars:
+    username: "admin"
+    password: "1202199022"
+    domain: "lxc_php7_10.dev"
+  roles:
+    - yii
